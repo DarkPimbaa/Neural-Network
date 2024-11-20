@@ -1,0 +1,14 @@
+{
+	"name": "treinamentoai",
+	"version": "1.0.0",
+	"main": "index.mjs",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Junin",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"big.js": "^6.2.2"
+	}
+}
