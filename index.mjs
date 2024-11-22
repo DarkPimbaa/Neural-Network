@@ -50,11 +50,11 @@ let historicoInicial = gerarHistoricoInicial(multiplicadores, tamanhoHistorico);
 
 // Treinamento por 100 gerações
 const geracoes = 10;
-const maxRodadas = 100; // Número de rodadas baseando-se no tamanho do array de multiplicadores
+const maxRodadas = 50; // Número de rodadas baseando-se no tamanho do array de multiplicadores
 const quantosIndividuos = 10000;
-const maxVesesSemApostar = 20;
+const maxVesesSemApostar = 25;
 // definindo as constantes da rede neural
-const entrada = 21;
+const entrada = 11;
 const layers = 3;
 const saida = 4;
 
