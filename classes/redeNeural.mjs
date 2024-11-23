@@ -66,7 +66,7 @@ export default class RedeNeural {
 					for (let rede of redes) {
 						somaPesos += rede.neuronios[layerIndex][neuronIndex].pesos[pesoIndex];
 					}
-					const media = somaPesos / redes.length;
+					const media = Math.round(somaPesos / redes.length);
 
 					// Atualiza o peso com a média
 					this.neuronios[layerIndex][neuronIndex].pesos[pesoIndex] = media;
