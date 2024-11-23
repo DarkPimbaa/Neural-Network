@@ -56,7 +56,13 @@ export default class RedeNeural {
 			for (let i = 0; i < this.entrada; i++) {
 				// pesos
 				for (let indexx = 0; indexx < this.neuronios[0][0].pesos.length; indexx++) {
-					this.neuronios[index][i].pesos[indexx] = this.neuronios[index][i].pesos[indexx] + this.aleatorioSinal(nivel);
+					let novoPeso = this.neuronios[index][i].pesos[indexx] + this.aleatorioSinal(nivel);
+
+					// Limitar peso ao intervalo de -1000 a 1000
+					novoPeso = Math.max(-1000, Math.min(1000, novoPeso));
+
+					// Atualizar o peso
+					this.neuronios[index][i].pesos[indexx] = novoPeso;
 				}
 			}
 		}

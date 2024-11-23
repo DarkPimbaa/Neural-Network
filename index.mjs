@@ -1,5 +1,11 @@
 import Individuo from "./classes/individuo.mjs";
 import Util from "./classes/utils.mjs";
+import fs from "fs";
+
+const salvarPesos = (pesos, nomeArquivo = "melhores_pesos.json") => {
+	fs.writeFileSync(nomeArquivo, JSON.stringify(pesos, null, 2), "utf-8");
+	console.log(`Pesos salvos em ${nomeArquivo}`);
+};
 
 //array de saida
 let Asaida = [];
@@ -47,9 +53,9 @@ const tamanhoHistorico = 10; // Número de rodadas no histórico // sempre - 1 e
 let historicoInicial = gerarHistoricoInicial(multiplicadores, tamanhoHistorico);
 
 // Treinamento por 100 gerações
-const geracoes = 100;
+const geracoes = 10;
 const maxRodadas = 50; // Número de rodadas baseando-se no tamanho do array de multiplicadores
-const quantosIndividuos = 1000;
+const quantosIndividuos = 10000;
 const maxVesesSemApostar = 25;
 // definindo as constantes da rede neural
 const entrada = 11;
@@ -70,7 +76,7 @@ for (let i = 0; i < quantosIndividuos * 0.25; i++) {
 // Variável para armazenar os pesos do melhor indivíduo
 let melhoresPesos = null;
 
-let indice = 0;
+let indice = 500;
 
 console.time("Total");
 // Atualização do input dentro das gerações
@@ -151,6 +157,7 @@ for (let geracao = 0; geracao < geracoes; geracao++) {
 	if (melhorIndividuo) {
 		melhoresPesos = melhorIndividuo.rede.getPesos(); // Salvar os pesos do melhor indivíduo
 		console.log(`Melhor indivíduo da geração ${geracao + 1}: Saldo = ${melhorIndividuo.saldo}`);
+		salvarPesos(melhoresPesos);
 	}
 
 	// Ajustar os pesos para a próxima geração
@@ -175,7 +182,9 @@ for (let geracao = 0; geracao < geracoes; geracao++) {
 	});
 
 	individuos3.forEach((individuo) => {
-		individuo.rede.gerarPesos(); // Regenerar pesos aleatoriamente
+		individuo.rede.carregarPesos(melhoresPesos); // Usar os pesos do melhor indivíduo
+		individuo.rede.modificarPesos(10); // Ajuste moderado
+		//individuo.rede.gerarPesos(); // Regenerar pesos aleatoriamente
 		individuo.saldo = 100.0;
 		individuo.saldoInicial = 100.0;
 		individuo.Bvivo = true;
