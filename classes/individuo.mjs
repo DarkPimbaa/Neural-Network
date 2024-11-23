@@ -2,6 +2,7 @@ import RedeNeural from "./redeNeural.mjs";
 /** Cria um indivíduo com uma rede neural já iniciada */
 export default class Individuo {
 	constructor(saldoInicial, entrada, layers, saida) {
+		this.saldoInicial = saldoInicial;
 		this.saldo = saldoInicial;
 		this.Bvivo = true;
 		this.quantidadeDeVezesSemApostar = 0;

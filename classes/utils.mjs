@@ -32,4 +32,13 @@ export default class Util {
 			throw erro;
 		}
 	}
+
+	/** pega a diferença em porcentagem de dois valores */
+	getDiferenca(valorBase, valorComparacao) {
+		if (valorBase === 0) {
+			throw new Error("O valor base não pode ser zero.");
+		}
+		const porcentagem = (valorComparacao / valorBase) * 100;
+		return parseFloat(porcentagem.toFixed(2));
+	}
 }
