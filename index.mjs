@@ -42,8 +42,9 @@ let individuos3 = [];
 // Gerar histórico inicial antes de começar as gerações
 const gerarHistoricoInicial = (multiplicadores, tamanhoHistorico) => {
 	let historico = [];
+	multiplicadores;
 	for (let i = 0; i < tamanhoHistorico; i++) {
-		historico.push(multiplicadores[i] > 1.99 ? 1 : 0);
+		historico.push(0); //multiplicadores[i] > 1.99 ? 1 : 0
 	}
 	return historico;
 };
@@ -53,10 +54,11 @@ const tamanhoHistorico = 10; // Número de rodadas no histórico // sempre - 1 e
 let historicoInicial = gerarHistoricoInicial(multiplicadores, tamanhoHistorico);
 
 // Treinamento por 100 gerações
-const geracoes = 10;
-const maxRodadas = 50; // Número de rodadas baseando-se no tamanho do array de multiplicadores
+const geracoes = 10000;
+const maxRodadas = 10; // Número de rodadas baseando-se no tamanho do array de multiplicadores
 const quantosIndividuos = 10000;
-const maxVesesSemApostar = 25;
+const maxVesesSemApostar = 10;
+const maximoDeJogadas = 3;
 // definindo as constantes da rede neural
 const entrada = 11;
 const layers = 3;
@@ -76,7 +78,7 @@ for (let i = 0; i < quantosIndividuos * 0.25; i++) {
 // Variável para armazenar os pesos do melhor indivíduo
 let melhoresPesos = null;
 
-let indice = 500;
+let indice = 0;
 
 console.time("Total");
 // Atualização do input dentro das gerações
@@ -89,6 +91,13 @@ for (let geracao = 0; geracao < geracoes; geracao++) {
 		[individuos1, individuos2, individuos3].forEach((grupo) => {
 			grupo.forEach((individuo) => {
 				if (!individuo.Bvivo) return;
+
+				// Verificar se excedeu o limite de apostas
+				if (individuo.quantasApostasFez > maximoDeJogadas) {
+					individuo.saldo = 0;
+					individuo.Bvivo = false;
+					return;
+				}
 
 				if (individuo.saldo > individuo.saldoInicial) {
 					individuo.saldoInicial = individuo.saldo;
@@ -142,7 +151,6 @@ for (let geracao = 0; geracao < geracoes; geracao++) {
 		});
 		indice++;
 	}
-	console.timeEnd("Geração");
 
 	const melhorIndividuo = [...individuos1, ...individuos2, ...individuos3].reduce((melhor, atual) => {
 		// Filtrar somente os indivíduos vivos
@@ -157,40 +165,52 @@ for (let geracao = 0; geracao < geracoes; geracao++) {
 	if (melhorIndividuo) {
 		melhoresPesos = melhorIndividuo.rede.getPesos(); // Salvar os pesos do melhor indivíduo
 		console.log(`Melhor indivíduo da geração ${geracao + 1}: Saldo = ${melhorIndividuo.saldo}`);
-		salvarPesos(melhoresPesos);
+		if (geracao == geracoes - 1) {
+			salvarPesos(melhoresPesos);
+		}
 	}
 
 	// Ajustar os pesos para a próxima geração
 	individuos1.forEach((individuo) => {
-		individuo.rede.carregarPesos(melhoresPesos); // Usar os pesos do melhor indivíduo
-		individuo.rede.modificarPesos(1); // Pequeno ajuste
+		if (geracao > 0) {
+			individuo.rede.carregarPesos(melhoresPesos); // Usar os pesos do melhor indivíduo
+			individuo.rede.modificarPesos(1); // Pequeno ajuste
+		}
 		individuo.saldo = 100.0;
 		individuo.saldoInicial = 100.0;
 		individuo.Bvivo = true;
+		individuo.quantasApostasFez = 0; // Reinicia o contador de apostas
 		//individuo.saldoInicial = melhorIndividuo.saldo; // Atualizar saldoInicial com o saldo do melhor indivíduo
 		//individuo.saldo = individuo.saldoInicial; // Reiniciar saldo atual com o saldo inicial
 	});
 
 	individuos2.forEach((individuo) => {
-		individuo.rede.carregarPesos(melhoresPesos); // Usar os pesos do melhor indivíduo
-		individuo.rede.modificarPesos(5); // Ajuste moderado
+		if (geracao > 0) {
+			individuo.rede.carregarPesos(melhoresPesos); // Usar os pesos do melhor indivíduo
+			individuo.rede.modificarPesos(75); // Pequeno ajuste
+		}
 		individuo.saldo = 100.0;
 		individuo.saldoInicial = 100.0;
 		individuo.Bvivo = true;
+		individuo.quantasApostasFez = 0; // Reinicia o contador de apostas
 		//individuo.saldoInicial = melhorIndividuo.saldo; // Atualizar saldoInicial com o saldo do melhor indivíduo
 		//individuo.saldo = individuo.saldoInicial; // Reiniciar saldo atual com o saldo inicial
 	});
 
 	individuos3.forEach((individuo) => {
-		individuo.rede.carregarPesos(melhoresPesos); // Usar os pesos do melhor indivíduo
-		individuo.rede.modificarPesos(10); // Ajuste moderado
-		//individuo.rede.gerarPesos(); // Regenerar pesos aleatoriamente
+		if (geracao > 0) {
+			//individuo.rede.carregarPesos(melhoresPesos); // Usar os pesos do melhor indivíduo
+			//individuo.rede.modificarPesos(250); // Pequeno ajuste
+			individuo.rede.gerarPesos(); // Regenerar pesos aleatoriamente
+		}
 		individuo.saldo = 100.0;
 		individuo.saldoInicial = 100.0;
 		individuo.Bvivo = true;
+		individuo.quantasApostasFez = 0; // Reinicia o contador de apostas
 		//individuo.saldoInicial = melhorIndividuo.saldo; // Atualizar saldoInicial com o saldo do melhor indivíduo
 		//individuo.saldo = individuo.saldoInicial; // Reiniciar saldo atual com o saldo inicial
 	});
+	console.timeEnd("Geração");
 }
 
 console.log("Treinamento concluído!");

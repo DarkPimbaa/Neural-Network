@@ -46,23 +46,30 @@ export default class RedeNeural {
 		return true;
 	}
 
-	/** Modifica os pesos pelo nível, exemplo: nível = 5 todos os pesos vão somar -5 ou 5 aleatóriamente
-	 * @param {int} nivel
+	/** Modifica os pesos para serem a média dos pesos de várias redes fornecidas
+	 * @param {RedeNeural[]} redes Array de outras instâncias de Redes Neurais para calcular a média dos pesos.
 	 */
-	modificarPesos(nivel) {
-		// layer
-		for (let index = 0; index < this.layers + 1; index++) {
-			// neurônios
-			for (let i = 0; i < this.entrada; i++) {
-				// pesos
-				for (let indexx = 0; indexx < this.neuronios[0][0].pesos.length; indexx++) {
-					let novoPeso = this.neuronios[index][i].pesos[indexx] + this.aleatorioSinal(nivel);
+	modificarPesos(redes) {
+		// Verifica se há redes para processar
+		if (!redes || redes.length === 0) {
+			throw new Error("O array de redes fornecido está vazio ou inválido.");
+		}
 
-					// Limitar peso ao intervalo de -1000 a 1000
-					novoPeso = Math.max(-1000, Math.min(1000, novoPeso));
+		// Percorre cada layer
+		for (let layerIndex = 0; layerIndex < this.layers + 1; layerIndex++) {
+			// Percorre cada neurônio no layer
+			for (let neuronIndex = 0; neuronIndex < this.entrada; neuronIndex++) {
+				// Percorre cada peso do neurônio
+				for (let pesoIndex = 0; pesoIndex < this.neuronios[layerIndex][neuronIndex].pesos.length; pesoIndex++) {
+					// Calcula a média dos pesos do peso atual
+					let somaPesos = 0;
+					for (let rede of redes) {
+						somaPesos += rede.neuronios[layerIndex][neuronIndex].pesos[pesoIndex];
+					}
+					const media = somaPesos / redes.length;
 
-					// Atualizar o peso
-					this.neuronios[index][i].pesos[indexx] = novoPeso;
+					// Atualiza o peso com a média
+					this.neuronios[layerIndex][neuronIndex].pesos[pesoIndex] = media;
 				}
 			}
 		}
