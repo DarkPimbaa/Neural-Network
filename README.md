@@ -1,3 +1,3 @@
 # Neural-Network
 
-A simple neural network from scratct
+A simple neural network from scratch
